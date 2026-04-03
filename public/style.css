@@ -1,0 +1,597 @@
+/* Reset and Base Styles */
+body {
+    font-family: 'Pretendard', sans-serif;
+    margin: 0;
+    background-color: #FAF9F6; /* A complementary dark background */
+    color: #333;
+    overflow: hidden; /* Prevent scrolling */
+}
+
+/* Main container for absolute positioning */
+.main-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    min-width: 320px;
+}
+
+/* Remove default button styles */
+button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+/* Title Box */
+.title-box {
+    position: absolute;
+    left: 6.04vw;
+    top: 3.89vh;
+    width: 52.08vw;
+    height: 18.52vh;
+    background-color: #FFF7DA;
+    border-radius: 5.2vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 25px 25px 30px rgba(0, 0, 0, 0.25);
+}
+
+.title-box h1 {
+    color: #EB8F26;
+    font-size: clamp(24px, 2.2vw, 40px);
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Checklist Panel */
+.checklist-panel {
+    position: absolute;
+    left: 43.85vw;
+    top: 13.15vh;
+    width: 39.58vw;
+    height: 81.48vh;
+    background-color: #FFFCF3;
+    border-radius: 5.2vw;
+    padding: 2rem;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 25px 25px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* Record Section inside Checklist Panel */
+#record-section {
+    background: transparent;
+    box-shadow: none;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Allow scrolling if content overflows */
+}
+
+#record-section h2, #record-section h3 {
+    text-align: center;
+    color: #737373;
+}
+#record-section h2{
+    font-size: clamp(20px, 1.8vw, 32px);
+    margin-bottom: 1.5rem;
+}
+#record-section h3{
+    font-size: clamp(16px, 1.2vw, 24px);
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+#record-section input[type="text"],
+#record-section input[type="number"],
+#record-section select {
+    width: 100%;
+    padding: 10px;
+    margin: 0.5rem 0;
+    border: 1px solid #737373;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background-color: #FFFCF3;
+    color: #737373;
+}
+
+#record-section #dress-code-violations,
+#record-section #electronic-device-violation {
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid #737373;
+    border-radius: 10px;
+}
+#record-section #dress-code-violations label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #737373;
+}
+
+#record-section #save-violation {
+    background-color: #898989;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    font-size: clamp(16px, 1.1vw, 20px);
+    margin-top: auto; /* Push to the bottom */
+}
+#record-section #save-violation:hover {
+    background-color: #898989;
+}
+
+
+/* Record Button */
+#record-violation-btn {
+    position: absolute;
+    left: 73.8vw;
+    top: 77.96vh;
+    width: clamp(80px, 7.8vw, 150px);
+    height: clamp(80px, 7.8vw, 150px);
+    background-color: #EB8F26;
+    opacity: 0.85;
+    border-radius: 50%;
+    color: white;
+    font-size: clamp(16px, 1.5vw, 28px);
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s, opacity 0.2s;
+}
+#record-violation-btn:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+
+/* Auth Login Button */
+#teacher-auth-btn {
+    position: absolute;
+    left: 88.75vw;
+    top: 5.64vh;
+    color: #898989;
+    font-size: clamp(14px, 1vw, 18px);
+    font-weight: 500;
+}
+#teacher-auth-btn:hover {
+    text-decoration: underline;
+}
+
+/* Hidden class utility */
+.hidden {
+    display: none !important;
+}
+
+/* Password Modal (keep original styles for functionality) */
+#password-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #FFF7DA;
+    width: clamp(280px, 80vw, 350px);
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    color: #737373;
+}
+.modal-content h2 {
+    color: #898989;
+}
+.modal-content input {
+     background-color: #FFF7DA;
+     border: 1px solid #FFF7DA;
+}
+
+.modal-content button {
+    color: white;
+    margin-top: 1rem;
+    border-radius: 8px;
+    padding: 10px 15px;
+}
+
+#password-submit {
+    background-color: #EB8F26;
+}
+#password-submit:hover {
+    background-color: #EB8F26;
+}
+#password-cancel {
+    background-color: #898989;
+    margin-top: 8px;
+}
+#password-cancel:hover {
+    background-color: #898989;
+}
+
+/* Login Modal for admin email/password (appears in center) */
+#login-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0,0,0,0.4);
+    z-index: 1100; /* above other modals */
+}
+
+.login-modal-content {
+    background: #FFF7DA;
+    width: clamp(280px, 80vw, 420px);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: #333;
+}
+.login-modal-content h2 {
+    margin: 0 0 6px 0;
+    text-align: center;
+    color: #898989;
+}
+.login-modal-content input[type="email"],
+.login-modal-content input[type="password"] {
+    padding: 10px;
+    border: 1px solid #FFF7DA;
+    border-radius: 8px;
+    background: #FFF7DA;
+    box-sizing: border-box;
+}
+.login-modal-content button {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+#login-submit {
+    background: #EB8F26;
+    color: #fff;
+}
+#login-submit:hover { background: #EB8F26; }
+#login-cancel {
+    background: #898989;
+    color: #fff;
+}
+#login-cancel:hover { background: #898989; }
+
+
+/* Basic Media Query for smaller screens */
+@media (max-width: 768px) {
+    body {
+        overflow: auto;
+    }
+    .main-container {
+        position: static;
+        height: auto;
+        padding: 2rem 1rem;
+    }
+    .title-box, .checklist-panel, #record-violation-btn, #teacher-auth-btn {
+
+    /* Mobile-only: hide the teacher auth button to avoid layout issues when checklist expands */
+    #teacher-auth-btn {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+        position: static;
+        width: 100%;
+        height: auto;
+        margin-bottom: 1rem;
+    }
+    .checklist-panel {
+        min-height: 500px;
+    }
+    #record-violation-btn {
+        width: 100px;
+        height: 100px;
+        margin: 1rem auto;
+    }
+}
+
+/* Admin layout overrides (coordinates are % based for 1920x1080 design) */
+.container {
+    position: relative;
+}
+
+.record-card, .count-card,
+.record-inner, .count-inner,
+.title-record, .title-count,
+.toggle, .back-btn {
+    position: absolute;
+}
+
+.record-card {
+    left: 7.5521%;
+    top: 6.2963%;
+    width: 39.5833%;
+    height: 87.3148%;
+    z-index: 1;
+}
+.count-card {
+    left: 52.8646%;
+    top: 6.2963%;
+    width: 39.5833%;
+    height: 87.3148%;
+    z-index: 1;
+}
+
+.record-inner {
+    left: 9.8958%;
+    top: 9.5370%;
+    width: 34.8958%;
+    height: 14.6296%;
+    z-index: 2;
+}
+.count-inner {
+    left: 55.2083%;
+    top: 9.5370%;
+    width: 34.8958%;
+    height: 14.6296%;
+    z-index: 2;
+}
+
+.title-record {
+    left: 12.1354%;
+    top: 12.0370%;
+    z-index: 3;
+}
+.title-count {
+    left: 57.4479%;
+    top: 12.0370%;
+    z-index: 3;
+}
+
+.toggle { z-index: 4; }
+.toggle-date { left: 12.1354%; top: 18.0556%; width: 14.2188%; height: 3.6111%; }
+.toggle-period { left: 28.2813%; top: 18.0556%; width: 14.2188%; height: 3.6111%; }
+.toggle-period-count { left: 57.4479%; top: 18.0556%; width: 14.2188%; height: 3.6111%; }
+.toggle-count-by { left: 73.5938%; top: 18.0556%; width: 14.2188%; height: 3.6111%; }
+
+.back-btn { left: 88.75%; top: 93.6111%; z-index: 5; }
+
+/* Tables for admin page fixed areas */
+/* Table area styling - enforce fixed layout and wrapping/ellipsis to keep text inside specified boxes */
+#daily-table-area table, #cumulative-table-area table {
+    width: 100%;
+    height: 100%;
+    border: none; /* no border */
+    background: transparent; /* no fill */
+    border-radius: 0; /* corner radius 0 */
+    table-layout: fixed; /* enforce column widths and wrapping */
+}
+
+#daily-table-area th, #daily-table-area td, #cumulative-table-area th, #cumulative-table-area td {
+    color: #737373;
+    font-size: 20px;
+    font-weight: 500; /* medium */
+    background: transparent;
+    border: none;
+    padding: 6px 8px;
+    word-break: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal; /* allow wrapping within cells */
+}
+
+/* Ensure cells don't overflow horizontally and respect table area */
+#daily-table-area td, #cumulative-table-area td {
+    max-width: 100%;
+}
+/* Enforce exact pixel boxes (1920x1080 baseline) and table behavior inside them.
+    The HTML contains inline coordinates; CSS here ensures overflow, fonts, z-index,
+    and stable table layout. These rules only affect the two admin table areas. */
+
+/* Container boxes: exact pixel positions and sizes (matches design) */
+#daily-table-area, #cumulative-table-area {
+     position: absolute;
+     box-sizing: border-box;
+     overflow-y: auto;       /* show vertical scrollbar when content overflows */
+     overflow-x: hidden;     /* prevent horizontal overflow */
+     z-index: 6;             /* must be above .record-card and .count-card */
+     background: transparent;
+}
+
+/* Explicit positions/sizes for 1920x1080 baseline. These mirror the inline styles
+    but are declared here so the layout is stable if inline changes are removed. */
+#daily-table-area { left: 11.04%; top: 28.52%; width: 32.60%; height: 59.72%; }
+#cumulative-table-area { left: 56.35%; top: 28.52%; width: 32.60%; height: 59.72%; }
+
+/* Inner wrapper: ensure child fills the box and scrolling happens at the container level */
+#daily-table-inner, #cumulative-table-inner {
+     width: 100%;
+     height: 100%;
+     box-sizing: border-box;
+     overflow-y: auto;
+     overflow-x: hidden;
+}
+
+/* Tables themselves should fit the container and use fixed table layout to stabilize columns. */
+#daily-table-area, #cumulative-table-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+}
+
+#daily-table-area table, #cumulative-table-area table {
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    background: transparent;
+    table-layout: fixed; /* enforce stable column widths and predictable wrapping */
+    overflow: auto;
+}
+
+/* Typography and cell wrapping: keep text inside cells, allow wrapping where needed.
+    Use overflow-wrap/word-break so long tokens don't overflow the box. */
+#daily-table-area th, #daily-table-area td,
+#cumulative-table-area th, #cumulative-table-area td {
+    color: #737373;
+    /* font-size rules per prompt: table 14px, th 15px, td 14px */
+    font-weight: 500;
+    background: transparent;
+    border: none;
+    padding: 6px 8px;
+    box-sizing: border-box;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal; /* allow wrapping */
+}
+
+/* Specific font-size separation for header vs cells */
+/* Scale admin table font sizes to 80% of previous values */
+#daily-table-area th, #cumulative-table-area th { font-size: 12px; }
+#daily-table-area td, #cumulative-table-area td { font-size: 11px; }
+
+/* Prevent cells from extending horizontally beyond their column width */
+#daily-table-area td, #cumulative-table-area td {
+     max-width: 100%;
+}
+
+/* Optional: small visual tweak to make table content readable when many rows exist */
+#daily-table-area tr, #cumulative-table-area tr { vertical-align: top; }
+
+/* Delete button style for daily records */
+.delete-record {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    color: white;
+    background-color: #898989;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* Mobile adjustments: stack the two areas vertically and allow horizontal scrolling inside tables */
+@media (max-width: 768px) {
+    #daily-table-area, #cumulative-table-area {
+        position: relative !important;
+        left: auto !important;
+        top: auto !important;
+        width: 90% !important;
+        height: auto !important;
+        margin: 12px auto !important;
+        overflow: visible !important;
+        display: block;
+    }
+
+    /* Make the table horizontally scrollable on small screens */
+    #daily-table-inner, #cumulative-table-inner {
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+    }
+
+    /* Reduce font sizes on mobile */
+    #daily-table-area th, #cumulative-table-area th { font-size: 12px; }
+    #daily-table-area td, #cumulative-table-area td { font-size: 12px; }
+}
+
+/* Mobile: center key elements horizontally and set Y positions in vh (1080x1920 -> vh conversion)
+   Rules below apply only on small screens and MUST NOT change element sizes or internal layouts.
+   They only adjust position/top and horizontal centering (left:50% + translateX(-50%)). */
+@media (max-width: 768px) {
+
+    /* Title text (place at ~6.9vh) */
+    .title-box {
+        position: absolute !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        top: 6.9vh !important;
+    }
+
+    /* Checklist background panel (place at ~18.5vh) */
+    .checklist-panel {
+        position: absolute !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        top: 18.5vh !important;
+    }
+
+    /* Record button centered horizontally, Y at ~47.6vh */
+    #record-violation-btn {
+        position: absolute !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        top: 47.6vh !important;
+    }
+
+    /* Teacher/admin auth button (권한 로그인) placed near bottom: ~94.2vh */
+    #teacher-auth-btn {
+        position: absolute !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        top: 94.2vh !important;
+    }
+
+    /* Ensure modals are centered on mobile (password/login). They are already centered
+       by overlays, but force fixed centering inside mobile to be explicit. */
+    #password-modal .modal-content,
+    #login-modal .login-modal-content {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+    }
+
+}
+
+@media (max-width:768px){
+
+html,body{overflow-y:auto;}
+
+.checklist-panel{height:auto!important;}
+
+#record-section{height:auto!important;}
+
+}
+
+/* FINAL MOBILE OVERRIDE: ensure teacher auth button is hidden on small screens.
+   Placed at EOF so it cannot be overridden by earlier mobile rules. */
+@media (max-width: 768px) {
+    #teacher-auth-btn {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+}
+
+/* Year download modal styles */
+#year-download-modal.hidden { display: none !important; }
+#year-download-modal {
+    display: none;
+}
+#year-download-modal:not(.hidden) {
+    display: flex;
+}
+#year-download-modal > div { box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+#year-select-list div { border-bottom: 1px solid #f2f2f2; padding: 6px 0; }
