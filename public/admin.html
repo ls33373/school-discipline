@@ -178,8 +178,13 @@
         <div id="admin-content" class="hidden">
             <div id="admin-panel" class="hidden" style="position:relative;padding:24px;z-index:100;">
                 <!-- admin panel intentionally minimal; controls are via toggle dropdowns -->
-                <div style="display:flex;gap:12px;align-items:center;">
+                <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
                     <button id="download-by-year-btn" style="padding:8px 12px;border-radius:6px;background:#EB8F26;color:#fff;border:none;cursor:pointer;">년도 별 기록</button>
+                    <label id="list-upload" style="padding:8px 12px;border-radius:6px;background:#4A90D9;color:#fff;border:none;cursor:pointer;font-size:14px;">
+                        명렬표 업로드
+                        <input type="file" id="roster-file-input" accept=".xlsx,.xls" style="display:none;">
+                    </label>
+                    <span id="roster-status" style="font-size:13px;color:#737373;"></span>
                 </div>
             </div>
         </div>

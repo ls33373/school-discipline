@@ -37,6 +37,7 @@ if (currentPath.includes('index.html') || currentPath === '/') {
     const passwordCancelBtn = document.getElementById('password-cancel');
     const recordSection = document.getElementById('record-section');
     const saveViolationBtn = document.getElementById('save-violation');
+    const recordCancelBtn = document.getElementById("record-cancel-btn")
     // Login modal elements for admin auth (email/password)
     const loginModal = document.getElementById('login-modal');
     const adminEmailInput = document.getElementById('admin-email');
@@ -51,7 +52,6 @@ if (currentPath.includes('index.html') || currentPath === '/') {
 
     // 기록 버튼 클릭 → 바로 기록 섹션 표시 (비밀번호 단계 건너뜀)
     recordBtn.addEventListener('click', () => {
-        console.log("button is clicked")
         // Show record section immediately without requiring password
         if (recordSection) recordSection.classList.remove('hidden');
         // Hide the floating record button
@@ -147,18 +147,30 @@ if (currentPath.includes('index.html') || currentPath === '/') {
         }
     });
 
+    recordCancelBtn.addEventListener("click", () => {
+        // Clear form
+        document.getElementById('student-id').value = '';
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+        dressCodeOtherText.value = '';
+        dressCodeOtherText.classList.add('hidden');
+        deviceViolationOtherText.value = '';
+        deviceViolationOtherText.classList.add('hidden');
+
+        recordSection.classList.add('hidden');
+        recordBtn.style.display = 'inline';
+    })
+
     saveViolationBtn.addEventListener('click', async () => {
         const studentId = document.getElementById('student-id').value;
-        const studentName = document.getElementById('student-name').value;
-        
+
         const dressCodeViolations = Array.from(document.querySelectorAll('input[name="dress-code"]:checked')).map(cb => cb.value);
         const dressCodeOther = dressCodeOtherCheck.checked ? document.getElementById('dress-code-other-text').value : '';
 
         const deviceViolations = Array.from(document.querySelectorAll('input[name="device-violation"]:checked')).map(cb => cb.value);
         const deviceOther = deviceViolationOtherCheck.checked ? document.getElementById('device-violation-other-text').value : '';
 
-        if (!studentId || !studentName) {
-            alert('학번과 이름을 모두 입력해주세요.');
+        if (!studentId) {
+            alert('학번을 입력해주세요.');
             return;
         }
 
@@ -166,7 +178,6 @@ if (currentPath.includes('index.html') || currentPath === '/') {
             const schoolYear = getAcademicYearForDate(new Date());
             await addDoc(collection(db, 'violations'), {
                 studentId,
-                studentName,
                 timestamp: Timestamp.now(),
                 schoolYear,
                 dressCodeViolations,
@@ -178,7 +189,6 @@ if (currentPath.includes('index.html') || currentPath === '/') {
             
             // Clear form
             document.getElementById('student-id').value = '';
-            document.getElementById('student-name').value = '';
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
             dressCodeOtherText.value = '';
             dressCodeOtherText.classList.add('hidden');
@@ -226,6 +236,70 @@ if (currentPath.includes('admin.html')) {
     const dropdownCumulativePeriod = document.getElementById('dropdown-cumulative-period');
     const dropdownCountBy = document.getElementById('dropdown-count-by');
     const xcountInput = document.getElementById('count-threshold-input');
+
+    // --- 명렬표 (학번→이름 Map) ---
+    function loadRosterFromStorage() {
+        try {
+            const saved = localStorage.getItem('rosterMap');
+            return saved ? JSON.parse(saved) : {};
+        } catch (e) {
+            return {};
+        }
+    }
+
+    function getStudentName(rosterMap, studentId) {
+        return rosterMap[studentId] || '';
+    }
+
+    let rosterMap = loadRosterFromStorage();
+
+    const rosterFileInput = document.getElementById('roster-file-input');
+    const rosterStatus = document.getElementById('roster-status');
+    const uploadBtn = document.getElementById("list-upload")
+
+    // 저장된 명렬표 있으면 상태 표시
+    if (Object.keys(rosterMap).length > 0) {
+        rosterStatus.textContent = `명렬표 로드됨 (${Object.keys(rosterMap).length}명)`;
+        uploadBtn.classList.add("hidden")
+    }
+
+    if (rosterFileInput) {
+        rosterFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                try {
+                    const wb = XLSX.read(evt.target.result, { type: 'binary' });
+                    const ws = wb.Sheets[wb.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+                    const newMap = {};
+                    // 첫 번째 행은 타이틀이므로 건너뜀 (index 1부터)
+                    for (let i = 1; i < rows.length; i++) {
+                        const row = rows[i];
+                        const id = row[0] ? String(row[0]).trim() : '';
+                        const name = row[1] ? String(row[1]).trim() : '';
+                        if (id && name) newMap[id] = name;
+                    }
+                    localStorage.setItem('rosterMap', JSON.stringify(newMap));
+                    rosterMap = newMap;
+                    rosterStatus.textContent = `명렬표 로드됨 (${Object.keys(newMap).length}명)`;
+                    rosterStatus.style.color = '#2a7a2a';
+                    // 테이블 새로고침
+                    loadViolations();
+                    loadCumulative();
+                    uploadBtn.classList.add("hidden")
+                } catch (err) {
+                    console.error('명렬표 파싱 오류:', err);
+                    rosterStatus.textContent = '파일 읽기 실패. 올바른 엑셀 파일인지 확인해주세요.';
+                    rosterStatus.style.color = '#c0392b';
+                }
+            };
+            reader.readAsBinaryString(file);
+            // input 초기화 (같은 파일 재업로드 허용)
+            rosterFileInput.value = '';
+        });
+    }
 
     // internal state
     let dailyPeriodChoice = '전체';
@@ -403,7 +477,7 @@ if (currentPath.includes('admin.html')) {
                     const docYear = (r.schoolYear !== undefined && r.schoolYear !== null) ? Number(r.schoolYear) : getAcademicYearForDate(docDate);
                     if (docYear !== year) return;
                     const id = r.studentId || '';
-                    if (!map[id]) map[id] = { studentName: r.studentName || '', dress:0, device:0 };
+                    if (!map[id]) map[id] = { dress:0, device:0 };
                     const hasDressViolation = (r.dressCodeViolations && r.dressCodeViolations.length) || (r.dressCodeOther && String(r.dressCodeOther).trim().length > 0);
                     if (hasDressViolation) map[id].dress++;
                     const hasDeviceViolation = (r.deviceViolations && r.deviceViolations.length) || (r.deviceOther && String(r.deviceOther).trim().length > 0);
@@ -412,7 +486,7 @@ if (currentPath.includes('admin.html')) {
 
                 const rows = Object.keys(map).map(k => ({
                     '학번': k,
-                    '이름': map[k].studentName,
+                    '이름': getStudentName(rosterMap, k),
                     '복장 누적': `${map[k].dress}회`,
                     '전자 누적': `${map[k].device}회`
                 }));
@@ -488,7 +562,7 @@ if (currentPath.includes('admin.html')) {
                     rows.push({
                         '날짜': new Date(r.timestamp.seconds * 1000).toLocaleDateString(),
                         '학번': r.studentId || '',
-                        '이름': r.studentName || '',
+                        '이름': getStudentName(rosterMap, r.studentId),
                         '복장 위반': dressDetails || '',
                         '복장 누적': counts[r.studentId] ? `${counts[r.studentId].dress}회` : '0회',
                         '전자기기': deviceDetails || '',
@@ -532,7 +606,7 @@ if (currentPath.includes('admin.html')) {
                     const currentYear = getCurrentAcademicYear();
                     if (docYear !== currentYear) return;
                     const id = r.studentId || '';
-                    if (!map[id]) map[id] = { studentName: r.studentName || '', dress:0, device:0 };
+                    if (!map[id]) map[id] = { dress:0, device:0 };
                     const hasDressViolation = (r.dressCodeViolations && r.dressCodeViolations.length) || (r.dressCodeOther && String(r.dressCodeOther).trim().length > 0);
                     if (hasDressViolation) map[id].dress++;
                     const hasDeviceViolation = (r.deviceViolations && r.deviceViolations.length) || (r.deviceOther && String(r.deviceOther).trim().length > 0);
@@ -541,7 +615,7 @@ if (currentPath.includes('admin.html')) {
 
                 const rows = Object.keys(map).map(k => ({
                     '학번': k,
-                    '이름': map[k].studentName,
+                    '이름': getStudentName(rosterMap, k),
                     '복장 누적': `${map[k].dress}회`,
                     '전자 누적': `${map[k].device}회`
                 }));
@@ -633,7 +707,7 @@ if (currentPath.includes('admin.html')) {
                         const tr = document.createElement('tr');
                         const dateCell = document.createElement('td'); dateCell.textContent = new Date(r.timestamp.seconds * 1000).toLocaleDateString(); dateCell.style.padding = '6px 8px';
                         const idCell = document.createElement('td'); idCell.textContent = r.studentId || ''; idCell.style.padding='6px 8px';
-                        const nameCell = document.createElement('td'); nameCell.textContent = r.studentName || ''; nameCell.style.padding='6px 8px';
+                        const nameCell = document.createElement('td'); nameCell.textContent = getStudentName(rosterMap, r.studentId); nameCell.style.padding='6px 8px';
                         const dressText = (r.dressCodeViolations || []).join(', ') + (r.dressCodeOther ? (r.dressCodeViolations && r.dressCodeViolations.length ? ', ' : '') + r.dressCodeOther : '');
                         const dressCount = counts[r.studentId] ? counts[r.studentId].dress : 0; const dressCell = document.createElement('td'); dressCell.textContent = `${dressText || '없음'} (${dressCount}회)`; dressCell.style.padding='6px 8px';
                         const deviceText = (r.deviceViolations || []).join(', ') + (r.deviceOther ? (r.deviceViolations && r.deviceViolations.length ? ', ' : '') + r.deviceOther : '');
@@ -694,7 +768,7 @@ if (currentPath.includes('admin.html')) {
                 const currentYear = getCurrentAcademicYear();
                 if (docYear !== currentYear) return;
                 const id = r.studentId || '';
-                if (!map[id]) map[id] = { studentName: r.studentName || '', dress:0, device:0 };
+                if (!map[id]) map[id] = { dress:0, device:0 };
                 const hasDressViolation = (r.dressCodeViolations && r.dressCodeViolations.length) || (r.dressCodeOther && String(r.dressCodeOther).trim().length > 0);
                 if (hasDressViolation) map[id].dress++;
                 const hasDeviceViolation = (r.deviceViolations && r.deviceViolations.length) || (r.deviceOther && String(r.deviceOther).trim().length > 0);
@@ -703,14 +777,13 @@ if (currentPath.includes('admin.html')) {
 
             const threshold = countThresholdValue || 0;
 
-            let rows = Object.keys(map).map(k => ({ id: k, name: map[k].studentName, dress: map[k].dress, device: map[k].device }));
+            let rows = Object.keys(map).map(k => ({ id: k, dress: map[k].dress, device: map[k].device }));
             if (threshold > 0) rows = rows.filter(r => (r.dress >= threshold) || (r.device >= threshold));
 
             rows.sort((a,b) => {
                 const na = a.id || '';
                 const nb = b.id || '';
-                if (na !== nb) return na.localeCompare(nb, 'ko');
-                return (a.name || '').localeCompare(b.name || '');
+                return na.localeCompare(nb, 'ko');
             });
 
             cumulativeTableContainer.innerHTML = '';
@@ -722,7 +795,7 @@ if (currentPath.includes('admin.html')) {
             rows.forEach(r => {
                 const tr = document.createElement('tr');
                 const idCell = document.createElement('td'); idCell.textContent = r.id; idCell.style.padding='6px 8px'; idCell.style.wordBreak='break-word';
-                const nameCell = document.createElement('td'); nameCell.textContent = r.name; nameCell.style.padding='6px 8px'; nameCell.style.wordBreak='break-word';
+                const nameCell = document.createElement('td'); nameCell.textContent = getStudentName(rosterMap, r.id); nameCell.style.padding='6px 8px'; nameCell.style.wordBreak='break-word';
                 const dressCell = document.createElement('td'); dressCell.textContent = `${r.dress}회`; dressCell.style.padding='6px 8px';
                 const deviceCell = document.createElement('td'); deviceCell.textContent = `${r.device}회`; deviceCell.style.padding='6px 8px';
                 [idCell,nameCell,dressCell,deviceCell].forEach(c=>{ c.style.color='#737373'; c.style.fontSize='16px'; c.style.fontWeight='500'; c.style.overflow='hidden'; c.style.textOverflow='ellipsis'; });
