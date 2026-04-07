@@ -18,9 +18,9 @@
                 <input type="text" id="student-id" placeholder="학번">
         
                 <div id="dress-code-violations">
-                    <h3>복장 단속</h3>
-                    <label><input type="checkbox" name="dress-code" value="교복 미착용 및 교복 변형"> 교복 미착용 및 교복 변형</label>
-                    <label><input type="checkbox" name="dress-code" value="실내화 등교"> 실내화 등교</label>
+                    <h3>교복 및 실내화 관련</h3>
+                    <label><input type="checkbox" name="dress-code" value="교복 미착용 및 변형"> 교복 미착용 및 변형</label>
+                    <label><input type="checkbox" name="dress-code" value="실내화 등하교"> 실내화 등하교</label>
                     <label class="other-label">
                         <input type="checkbox" id="dress-code-other-check"> 기타
                         <input type="text" id="dress-code-other-text" class="hidden" placeholder="기타 위반사항 입력">
@@ -28,11 +28,20 @@
                 </div>
         
                 <div id="electronic-device-violation">
-                    <h3>전자기기 위반</h3>
-                    <label><input type="checkbox" name="device-violation" value="무단 전자기기 사용"> 무단 전자기기 사용</label>
+                    <h3>스마트 기기 관련</h3>
+                    <label><input type="checkbox" name="device-violation" value="교과 시간 중 교사 지도 불응"> 교과 시간 중 교사 지도 불응</label>
+                    <label><input type="checkbox" name="device-violation" value="학습 및 교육 외적 사용"> 학습 및 교육 외적 사용</label>
                     <label class="other-label">
                         <input type="checkbox" id="device-violation-other-check"> 기타
                         <input type="text" id="device-violation-other-text" class="hidden" placeholder="기타 위반사항 입력">
+                    </label>
+                </div>
+
+                <div id="life-violation">
+                    <h3>생활지도 관련</h3>
+                    <label class="other-label">
+                        <input type="checkbox" id="life-violation-other-check"> 기타
+                        <input type="text" id="life-violation-other-text" class="hidden" placeholder="기타 위반사항 입력">
                     </label>
                 </div>
         

@@ -105,14 +105,16 @@ button {
 }
 
 #record-section #dress-code-violations,
-#record-section #electronic-device-violation {
+#record-section #electronic-device-violation,
+#record-section #life-violation {
     margin: 1rem 0;
     padding: 1rem;
     border: 1px solid #737373;
     border-radius: 10px;
 }
 #record-section #dress-code-violations label,
-#record-section #electronic-device-violation label {
+#record-section #electronic-device-violation label,
+#record-section #life-violation label {
     display: block;
     margin-bottom: 0.5rem;
     color: #737373;
@@ -387,12 +389,20 @@ button {
 }
 
 .toggle { z-index: 4; }
-.toggle-date { left: 12.1354%; top: 18.0556%; width: 14.2188%; height: 3.6111%; }
+.toggle-date { left: 12.1354%; top: 1.0556%; width: 14.2188%; height: 3.6111%; }
 .toggle-period { left: 28.2813%; top: 18.0556%; width: 14.2188%; height: 3.6111%; }
 .toggle-period-count { left: 57.4479%; top: 18.0556%; width: 14.2188%; height: 3.6111%; }
 .toggle-count-by { left: 73.5938%; top: 18.0556%; width: 14.2188%; height: 3.6111%; }
 
-.back-btn { left: 88.75%; top: 93.6111%; z-index: 5; }
+#back-btn {
+    background-color: #EB8F26;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: clamp(16px, 1.1vw, 20px);
+}
 
 /* Tables for admin page fixed areas */
 /* Table area styling - enforce fixed layout and wrapping/ellipsis to keep text inside specified boxes */

@@ -49,6 +49,8 @@ if (currentPath.includes('index.html') || currentPath === '/') {
     const dressCodeOtherText = document.getElementById('dress-code-other-text');
     const deviceViolationOtherCheck = document.getElementById('device-violation-other-check');
     const deviceViolationOtherText = document.getElementById('device-violation-other-text');
+    const lifeViolationOtherCheck = document.getElementById("life-violation-other-check")
+    const lifeViolationOtherText = document.getElementById("life-violation-other-text")
 
     // 기록 버튼 클릭 → 바로 기록 섹션 표시 (비밀번호 단계 건너뜀)
     recordBtn.addEventListener('click', () => {
@@ -82,17 +84,17 @@ if (currentPath.includes('index.html') || currentPath === '/') {
         }
     });
 
-    // 권한 로그인 버튼 → 페이지 이동 대신 로그인 모달 표시
-    authBtn.addEventListener('click', () => {
-        if (loginModal) {
-            loginModal.classList.remove('hidden');
-            // 포커스 편의성
-            if (adminEmailInput) adminEmailInput.focus();
-        } else {
-            // fallback: 기존 동작
-            window.location.href = 'admin.html';
-        }
-    });
+    // // 권한 로그인 버튼 → 페이지 이동 대신 로그인 모달 표시
+    // authBtn.addEventListener('click', () => {
+    //     if (loginModal) {
+    //         loginModal.classList.remove('hidden');
+    //         // 포커스 편의성
+    //         if (adminEmailInput) adminEmailInput.focus();
+    //     } else {
+    //         // fallback: 기존 동작
+    //         window.location.href = 'admin.html';
+    //     }
+    // });
 
     // 로그인 모달: 취소
     if (loginCancelBtn) {
@@ -147,6 +149,13 @@ if (currentPath.includes('index.html') || currentPath === '/') {
         }
     });
 
+    lifeViolationOtherCheck.addEventListener("change", () => {
+        lifeViolationOtherText.classList.toggle('hidden', !lifeViolationOtherCheck.checked);
+        if (!lifeViolationOtherCheck.checked) {
+            lifeViolationOtherText.value = '';
+        }
+    })
+
     recordCancelBtn.addEventListener("click", () => {
         // Clear form
         document.getElementById('student-id').value = '';
@@ -155,6 +164,8 @@ if (currentPath.includes('index.html') || currentPath === '/') {
         dressCodeOtherText.classList.add('hidden');
         deviceViolationOtherText.value = '';
         deviceViolationOtherText.classList.add('hidden');
+        lifeViolationOtherText.value = ""
+        lifeViolationOtherText.classList.add("hidden")
 
         recordSection.classList.add('hidden');
         recordBtn.style.display = 'inline';
@@ -168,6 +179,8 @@ if (currentPath.includes('index.html') || currentPath === '/') {
 
         const deviceViolations = Array.from(document.querySelectorAll('input[name="device-violation"]:checked')).map(cb => cb.value);
         const deviceOther = deviceViolationOtherCheck.checked ? document.getElementById('device-violation-other-text').value : '';
+
+        const lifeOther = lifeViolationOtherCheck.checked ? document.getElementById('life-violation-other-text').value : '';
 
         if (!studentId) {
             alert('학번을 입력해주세요.');
@@ -183,7 +196,8 @@ if (currentPath.includes('index.html') || currentPath === '/') {
                 dressCodeViolations,
                 dressCodeOther,
                 deviceViolations,
-                deviceOther
+                deviceOther,
+                lifeOther
             });
             alert('위반 사항이 저장되었습니다.');
             
@@ -194,6 +208,8 @@ if (currentPath.includes('index.html') || currentPath === '/') {
             dressCodeOtherText.classList.add('hidden');
             deviceViolationOtherText.value = '';
             deviceViolationOtherText.classList.add('hidden');
+            lifeViolationOtherText.value = ""
+            lifeViolationOtherText.classList.add("hidden")
 
 
         } catch (error) {
@@ -689,7 +705,7 @@ if (currentPath.includes('admin.html')) {
                 th.style.color = '#737373';
                 th.style.fontSize = '16px';
                 th.style.fontWeight = '500';
-                th.style.textAlign = 'left';
+                th.style.textAlign = 'center';
                 th.style.padding = '6px 8px';
                 hrow.appendChild(th);
             });
@@ -811,7 +827,7 @@ if (currentPath.includes('admin.html')) {
     }
 
     // Back button -> go to main
-    const backBtn = document.querySelector('.back-btn');
+    const backBtn = document.getElementById("back-btn")
     if (backBtn) backBtn.addEventListener('click', () => window.location.replace('index.html'));
 
 }
