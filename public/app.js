@@ -84,17 +84,17 @@ if (currentPath.includes('index.html') || currentPath === '/') {
         }
     });
 
-    // // 권한 로그인 버튼 → 페이지 이동 대신 로그인 모달 표시
-    // authBtn.addEventListener('click', () => {
-    //     if (loginModal) {
-    //         loginModal.classList.remove('hidden');
-    //         // 포커스 편의성
-    //         if (adminEmailInput) adminEmailInput.focus();
-    //     } else {
-    //         // fallback: 기존 동작
-    //         window.location.href = 'admin.html';
-    //     }
-    // });
+    // 권한 로그인 버튼 → 페이지 이동 대신 로그인 모달 표시
+    authBtn.addEventListener('click', () => {
+        if (loginModal) {
+            loginModal.classList.remove('hidden');
+            // 포커스 편의성
+            if (adminEmailInput) adminEmailInput.focus();
+        } else {
+            // fallback: 기존 동작
+            window.location.href = 'admin.html';
+        }
+    });
 
     // 로그인 모달: 취소
     if (loginCancelBtn) {
