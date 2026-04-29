@@ -197,7 +197,9 @@ if (currentPath.includes('index.html') || currentPath === '/') {
                 window.location.replace('admin.html');
             } catch (error) {
                 console.error('Admin login failed:', error);
-                alert('로그인 실패');
+                
+                if (error.code === "auth/invalid-credential") { alert("비밀번호가 일치하지 않습니다.") }
+                else if (error.code === "auth/invalid-email") { alert("이메일이 일치하지 않습니다.") }
             }
         });
     }
