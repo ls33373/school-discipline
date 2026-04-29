@@ -247,7 +247,7 @@ button {
 }
 
 /* Login Modal for admin email/password (appears in center) */
-#login-modal {
+#login-modal, #pw-reset-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -260,7 +260,7 @@ button {
     z-index: 1100; /* above other modals */
 }
 
-.login-modal-content {
+.login-modal-content, .pw-reset-content {
     background: #FFF7DA;
     width: clamp(280px, 80vw, 420px);
     padding: 24px;
@@ -271,35 +271,40 @@ button {
     gap: 10px;
     color: #333;
 }
-.login-modal-content h2 {
+
+.login-modal-content h2, .pw-reset-content h2 {
     margin: 0 0 6px 0;
     text-align: center;
     color: #898989;
 }
+
+/* 모달 구성하면서 스타일 적용하기 */
 .login-modal-content input[type="email"],
-.login-modal-content input[type="password"] {
+.login-modal-content input[type="password"],
+.pw-reset-content input[type="password"] {
     padding: 10px;
     border: 1px solid #FFF7DA;
     border-radius: 8px;
     background: #FFF7DA;
     box-sizing: border-box;
 }
-.login-modal-content button {
+.login-modal-content button,
+.pw-reset-content button {
     padding: 10px 12px;
     border-radius: 8px;
     border: none;
     cursor: pointer;
 }
-#login-submit {
+#login-submit, #reset-submit {
     background: #EB8F26;
     color: #fff;
 }
-#login-submit:hover { background: #EB8F26; }
-#login-cancel {
+#login-submit:hover, #reset-submit:hover { background: #EB8F26; }
+#login-cancel, #reset-cancel {
     background: #898989;
     color: #fff;
 }
-#login-cancel:hover { background: #898989; }
+#login-cancel:hover, #reset-cancel:hover { background: #898989; }
 
 
 /* Basic Media Query for smaller screens */
@@ -583,8 +588,9 @@ button {
 
     /* Ensure modals are centered on mobile (password/login). They are already centered
        by overlays, but force fixed centering inside mobile to be explicit. */
-    #password-modal .modal-content,
-    #login-modal .login-modal-content {
+    #password-modal, .modal-content,
+    #login-modal, .login-modal-content,
+    #pw-reset-modal, .pw-reset-content {
         position: fixed !important;
         top: 50% !important;
         left: 50% !important;

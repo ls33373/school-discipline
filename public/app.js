@@ -1,6 +1,9 @@
 import { db, auth } from './firebase.js';
 import { getDoc, doc, collection, addDoc, getDocs, where, query, deleteDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
+    onAuthStateChanged, signInWithEmailAndPassword, signOut,
+    EmailAuthProvider, reauthenticateWithCredential, updatePassword
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const currentPath = window.location.pathname;
 
@@ -31,6 +34,7 @@ if (currentPath.includes('index.html') || currentPath === '/') {
 
     const recordBtn = document.getElementById('record-violation-btn');
     const authBtn = document.getElementById('teacher-auth-btn');
+    const pwResetBtn = document.getElementById("reset-pw")
     const passwordModal = document.getElementById('password-modal');
     const passwordInput = document.getElementById('teacher-password');
     const passwordSubmitBtn = document.getElementById('password-submit');
@@ -51,6 +55,13 @@ if (currentPath.includes('index.html') || currentPath === '/') {
     const deviceViolationOtherText = document.getElementById('device-violation-other-text');
     const lifeViolationOtherCheck = document.getElementById("life-violation-other-check")
     const lifeViolationOtherText = document.getElementById("life-violation-other-text")
+
+    // 비밀번호 변경 모달
+    const resetPwModal = document.getElementById("pw-reset-modal")
+    const resetCancelBtn = document.getElementById("reset-cancel")
+    const resetSubmitBtn = document.getElementById("reset-submit")
+    const newPwInput = document.getElementById("new-pw-input")
+    const nowPwInput = document.getElementById("now-pw-input")
 
     // 기록 버튼 클릭 → 바로 기록 섹션 표시 (비밀번호 단계 건너뜀)
     recordBtn.addEventListener('click', () => {
@@ -95,6 +106,63 @@ if (currentPath.includes('index.html') || currentPath === '/') {
             window.location.href = 'admin.html';
         }
     });
+
+    // 비밀번호 변경 모달
+    pwResetBtn.addEventListener("click", () => {
+        // 모달 창 닫기
+        loginModal.classList.add("hidden")
+
+        // 입력 내용 초기화
+        const emailInput = document.getElementById("admin-email")
+        const pwInput = document.getElementById("admin-password")
+        emailInput.value = ""; pwInput.value = "";
+
+        // 비밀번호 변경 모달 창 열기
+        resetPwModal.classList.remove("hidden")
+        nowPwInput.focus()
+    })
+
+    // 비밀번호 변경 취소 -> 입력 내용 초기화 & 모달 숨기기
+    resetCancelBtn.addEventListener("click", () => {
+        newPwInput.value = ""; nowPwInput.value = "";
+        
+        resetPwModal.classList.add("hidden")
+    })
+
+    // 비밀번호 변경 진행 -> 입력 내용 초기화 & 비밀번호 변경
+    resetSubmitBtn.addEventListener("click", () => {
+        // 입력값 받아오기
+        const nowPw = nowPwInput ? nowPwInput.value : ""
+        const newPw = newPwInput ? newPwInput.value : ""
+
+        // 비밀번호 변경
+        const user = auth.currentUser
+        if (user) {
+            // 이메일과 현재 비밀번호로 인증 정보 생성
+            const credential = EmailAuthProvider.credential(user.email, nowPw)
+            reauthenticateWithCredential(user, credential) // 재인증 시도
+            .then(() => {
+                return updatePassword(user, newPw) // 재인증 성공 시 비밀번호 업데이트
+            })
+            .then(() => {
+                // 폼 초기화 및 모달 숨기기
+                nowPwInput.value = ""; newPwInput.value = "";
+                resetPwModal.classList.add("hidden")
+
+                alert("비밀번호가 성공적으로 변경되었습니다.")
+            })
+            .catch((error) => {
+                if (error.code === 'auth/invalid-credential') {
+                    alert("현재 비밀번호가 틀렸습니다. 다시 확인해 주세요.")
+                } else if (error.code === 'auth/weak-password') {
+                    alert("새 비밀번호는 6자리 이상이어야 합니다.")
+                } else {
+                    alert("오류가 발생했습니다.")
+                    console.log(error)
+                }
+            })
+        }
+    })
 
     // 로그인 모달: 취소
     if (loginCancelBtn) {
