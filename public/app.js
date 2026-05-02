@@ -323,6 +323,13 @@ if (currentPath.includes('admin.html')) {
     const dropdownCountBy = document.getElementById('dropdown-count-by');
     const xcountInput = document.getElementById('count-threshold-input');
 
+    // 타이틀에 선택한 날짜 표시
+    const title = document.getElementsByClassName("title-record")[0];
+    title.innerText = `일별 기록 조회(${new Date().toISOString().substring(0, 10)})`; // 오늘 날짜로 초기 설정
+    datePicker.addEventListener("change", () => {
+        title.innerText = `일별 기록 조회(${datePicker.value})`; // 날짜 선택 시 타이틀 날짜 변경
+    })
+
     // --- 명렬표 (학번→이름 Map) ---
     function loadRosterFromStorage() {
         try {
@@ -341,12 +348,15 @@ if (currentPath.includes('admin.html')) {
 
     const rosterFileInput = document.getElementById('roster-file-input');
     const rosterStatus = document.getElementById('roster-status');
-    const uploadBtn = document.getElementById("list-upload")
+    const uploadBtn = document.getElementById("list-upload");
+    const deleteBtn = document.getElementById("list-delete");
 
     // 저장된 명렬표 있으면 상태 표시
     if (Object.keys(rosterMap).length > 0) {
         rosterStatus.textContent = `명렬표 로드됨 (${Object.keys(rosterMap).length}명)`;
-        uploadBtn.classList.add("hidden")
+        rosterStatus.classList.remove("hidden");
+        uploadBtn.classList.add("hidden");
+        deleteBtn.classList.remove("hidden");
     }
 
     if (rosterFileInput) {
@@ -371,6 +381,9 @@ if (currentPath.includes('admin.html')) {
                     rosterMap = newMap;
                     rosterStatus.textContent = `명렬표 로드됨 (${Object.keys(newMap).length}명)`;
                     rosterStatus.style.color = '#2a7a2a';
+                    rosterStatus.classList.remove("hidden");
+                    uploadBtn.classList.add("hidden"); // 업로드 버튼 숨기기
+                    deleteBtn.classList.remove("hidden"); // 삭제 버튼 보이기   
                     // 테이블 새로고침
                     loadViolations();
                     loadCumulative();
@@ -386,6 +399,14 @@ if (currentPath.includes('admin.html')) {
             rosterFileInput.value = '';
         });
     }
+
+    // 업로드된 명렬표 삭제
+    deleteBtn.addEventListener("click", () => {
+        localStorage.removeItem("rosterMap");
+        rosterStatus.classList.add("hidden");
+        deleteBtn.classList.add("hidden");
+        uploadBtn.classList.remove("hidden");
+    })
 
     // internal state
     let dailyPeriodChoice = '전체';
@@ -416,7 +437,7 @@ if (currentPath.includes('admin.html')) {
         if (user && user.email === 'ps_guidance@ps.hs.kr') {
             if (adminContent) adminContent.classList.remove('hidden');
             if (adminPanel) adminPanel.classList.remove('hidden');
-            if (datePicker && !datePicker.value) datePicker.valueAsDate = new Date();
+            if (datePicker && !datePicker.value) datePicker.value = new Date().toISOString().substring(0, 10);
             loadViolations();
             loadCumulative();
         } else {
@@ -769,7 +790,7 @@ if (currentPath.includes('admin.html')) {
             table.style.tableLayout = 'fixed';
             const thead = document.createElement('thead');
             const hrow = document.createElement('tr');
-            ['날짜','학번','이름','복장 위반','무단 전자기기 사용','삭제'].forEach(h => {
+            ['학번','이름','복장 위반', "복장 위반(기타)", '무단 전자기기 사용', "무단 전자기기 사용(기타)", "생활지도(기타)", '삭제'].forEach(h => {
                 const th = document.createElement('th');
                 th.textContent = h;
                 th.style.color = '#737373';
@@ -778,6 +799,9 @@ if (currentPath.includes('admin.html')) {
                 th.style.textAlign = 'center';
                 th.style.padding = '6px 8px';
                 hrow.appendChild(th);
+
+                // 삭제 칸 크기 조절
+                if (h === "삭제" || h === "학번" || h === "이름") { th.style.width = "10vh"; }
             });
             thead.appendChild(hrow); table.appendChild(thead);
 
@@ -791,14 +815,39 @@ if (currentPath.includes('admin.html')) {
                         const currentYear = getCurrentAcademicYear();
                         if (docYear !== currentYear) return; // skip rows not in current academic year
                         const tr = document.createElement('tr');
-                        const dateCell = document.createElement('td'); dateCell.textContent = new Date(r.timestamp.seconds * 1000).toLocaleDateString(); dateCell.style.padding = '6px 8px';
                         const idCell = document.createElement('td'); idCell.textContent = r.studentId || ''; idCell.style.padding='6px 8px';
                         const nameCell = document.createElement('td'); nameCell.textContent = getStudentName(rosterMap, r.studentId); nameCell.style.padding='6px 8px';
-                        const dressText = (r.dressCodeViolations || []).join(', ') + (r.dressCodeOther ? (r.dressCodeViolations && r.dressCodeViolations.length ? ', ' : '') + r.dressCodeOther : '');
+                        const dressText = (r.dressCodeViolations || []).join(', ');
                         const dressCount = counts[r.studentId] ? counts[r.studentId].dress : 0; const dressCell = document.createElement('td'); dressCell.textContent = `${dressText || '없음'} (${dressCount}회)`; dressCell.style.padding='6px 8px';
-                        const deviceText = (r.deviceViolations || []).join(', ') + (r.deviceOther ? (r.deviceViolations && r.deviceViolations.length ? ', ' : '') + r.deviceOther : '');
+                        const deviceText = (r.deviceViolations || []).join(', ');
                         const deviceCount = counts[r.studentId] ? counts[r.studentId].device : 0; const deviceCell = document.createElement('td'); deviceCell.textContent = `${deviceText || '없음'} (${deviceCount}회)`; deviceCell.style.padding='6px 8px';
-                        [dateCell,idCell,nameCell,dressCell,deviceCell].forEach(c => { c.style.color='#737373'; c.style.fontSize='16px'; c.style.fontWeight='500'; c.style.wordBreak='break-word'; c.style.overflow='hidden'; c.style.textOverflow='ellipsis'; });
+                        
+                        // 복장 기타 셀
+                        const dressOtherText = `${r.dressCodeOther || ""}`;
+                        const dressOtherCell = document.createElement("td");
+                        dressOtherCell.textContent = dressOtherText;
+                        dressOtherCell.style.padding='6px 8px';
+
+                        // 전자기기 사용 기타 셀
+                        const deviceOtherText = `${r.deviceOther || ""}`;
+                        const deviceOtherCell = document.createElement("td");
+                        deviceOtherCell.textContent = deviceOtherText;
+                        deviceOtherCell.style.padding='6px 8px';
+
+                        // 생활지도 기타 셀
+                        const lifeOtherText = `${r.lifeOther || ""}`;
+                        const lifeOtherCell = document.createElement("td");
+                        lifeOtherCell.textContent = lifeOtherText;
+                        
+                        [idCell,nameCell,dressCell, dressOtherCell, deviceCell, deviceOtherCell, lifeOtherCell].forEach(c => {
+                            c.style.color='#737373';
+                            c.style.fontSize='16px';
+                            c.style.fontWeight='500';
+                            c.style.wordBreak='break-word';
+                            c.style.overflow='hidden';
+                            c.style.textOverflow='ellipsis';
+                            tr.appendChild(c)
+                        });
                         // Delete button cell
                         const delCell = document.createElement('td');
                         const delBtn = document.createElement('button');
@@ -817,7 +866,6 @@ if (currentPath.includes('admin.html')) {
                             }
                         });
                         delCell.appendChild(delBtn);
-                        tr.appendChild(dateCell); tr.appendChild(idCell); tr.appendChild(nameCell); tr.appendChild(dressCell); tr.appendChild(deviceCell);
                         tr.appendChild(delCell);
                         tbody.appendChild(tr);
             });
